@@ -316,6 +316,9 @@ function __main__() {
 
   fi
 
+  # Default status for commands (_init_cmd).
+  local r_state=0
+
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
   readonly commands=(basename dirname python nmap)
