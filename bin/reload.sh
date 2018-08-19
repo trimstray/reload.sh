@@ -483,10 +483,33 @@ function __main__() {
   local base_directory
   local working_directory
 
-  base_directory="/mnt/base"
+  local _source _source_cmd
+
+  base_directory="/mnt/"
+
+  # Load distro from:
+  # - file (archive)
+  if [[ -f "$_build_distro" ]] ; then
+
+    _source="$_build_distro"
+    _source_cmd="tar xzfp"
+
+  # - directory
+  elif [[ -d "$_build_distro" ]] ; then
+
+    _source="$_build_distro"
+    _source_cmd="rsync -ap"
+
+  # - external repository
+  else
+
+    _source="$_build_distro"
+    _source_cmd="deboostrap --arch amd64 jessie"
+
+  fi
 
   # Randomize working directory name.
-  _rand 32 ; working_directory="/mnt/$_rval"
+  _rand 32 ; working_directory="/${base_directory}/${_rval}"
 
   if [[ ! -d "$working_directory" ]] ; then
 
