@@ -545,7 +545,7 @@ function __main__() {
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
 
-    mount -o bind $i ${init_directory}/${i}
+    mount -o bind /${i} ${init_directory}/${i}
 
   done
 
