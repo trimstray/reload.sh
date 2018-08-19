@@ -549,6 +549,14 @@ function __main__() {
 
   done
 
+  if [[ ! -d "$xmem_directory" ]] ; then
+
+    mkdir -p "$xmem_directory"
+
+  fi
+
+  mount --bind  "$init_directory" "$xmem_directory"
+
   # ````````````````````````````````````````````````````````````````````````````
 
 }
