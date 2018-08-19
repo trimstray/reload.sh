@@ -509,7 +509,7 @@ function __main__() {
 
   local _source _source_cmd
 
-  base_directory="/mnt/"
+  base_directory="/mnt"
 
   # Randomize working directory name.
   _rand 32 ; working_directory="${base_directory}/${_rval}"
