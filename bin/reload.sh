@@ -543,7 +543,9 @@ function __main__() {
 
   _fdir="$init_directory"
 
-  local _chroot_cmd="eval chroot $_fdir /bin/bash -c"
+  local _chroot_cmd
+
+  _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
   if [[ ! -d "$init_directory" ]] ; then
 
@@ -603,6 +605,8 @@ function __main__() {
 
   _fdir="${init_directory}/${old_directory}"
 
+  _chroot_cmd="eval chroot $_fdir /bin/bash -c"
+
   _init_cmd \
   "$_chroot_cmd \"apt-get install ${packages}\""
 
@@ -611,6 +615,12 @@ function __main__() {
 
   _init_cmd \
   "$_chroot_cmd \"update-grub\""
+
+  _init_cmd \
+  "$_chroot_cmd \"echo 1 > /proc/sys/kernel/sysrq\""
+
+  _init_cmd \
+  "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
   # ````````````````````````````````````````````````````````````````````````````
 
