@@ -540,6 +540,13 @@ function __main__() {
 
   _init_cmd "$_source_cmd"
 
+  # Mount filesystems.
+  for i in proc sys dev dev/pts ; do
+
+    mount -o bind $i ${working_directory}/${i}
+
+  done
+
   # ````````````````````````````````````````````````````````````````````````````
 
 }
