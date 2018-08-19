@@ -512,7 +512,7 @@ function __main__() {
   base_directory="/mnt/"
 
   # Randomize working directory name.
-  _rand 32 ; working_directory="/${base_directory}/${_rval}"
+  _rand 32 ; working_directory="${base_directory}/${_rval}"
 
   if [[ ! -d "$working_directory" ]] ; then
 
