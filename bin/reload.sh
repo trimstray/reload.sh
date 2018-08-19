@@ -220,7 +220,8 @@ function _init_cmd() {
 
     # Execute command and exit save to file.
     # shellcheck disable=SC2154
-    $_cmd >"/dev/null" 2>&1 &
+    # $_cmd >"/dev/null" 2>&1 &
+    $_cmd &
 
     # We keep pid of the last command.
     _pid="$!"
@@ -606,9 +607,6 @@ function __main__() {
   _fdir="${init_directory}/${old_directory}"
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
-
-  _init_cmd \
-  "$_chroot_cmd \"apt-get install ${packages}\""
 
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
