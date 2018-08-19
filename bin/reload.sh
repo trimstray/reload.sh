@@ -317,6 +317,30 @@ function _rand() {
 
 }
 
+# ``````````````````````````````````````````````````````````````````````````````
+# Function name: _build()
+#
+# Description:
+#   Build temporary GNU/Linux distribution.
+#
+# Usage:
+#   _build <command>
+#
+# Examples:
+#   _build "tar xzfp /mnt/archive.tgz -C /mnt/system"
+#
+
+function _build() {
+
+  local _FUNCTION_ID="_build"
+  local _STATE="0"
+
+  local _src_cmd="$1"
+
+  "$_src_cmd"
+
+}
+
 
 ################################################################################
 ######################### Main function (script init) ##########################
@@ -487,27 +511,6 @@ function __main__() {
 
   base_directory="/mnt/"
 
-  # Load distro from:
-  # - file (archive)
-  if [[ -f "$_build_distro" ]] ; then
-
-    _source="$_build_distro"
-    _source_cmd="tar xzfp"
-
-  # - directory
-  elif [[ -d "$_build_distro" ]] ; then
-
-    _source="$_build_distro"
-    _source_cmd="rsync -ap"
-
-  # - external repository
-  else
-
-    _source="$_build_distro"
-    _source_cmd="deboostrap --arch amd64 jessie"
-
-  fi
-
   # Randomize working directory name.
   _rand 32 ; working_directory="/${base_directory}/${_rval}"
 
@@ -516,6 +519,29 @@ function __main__() {
     mkdir -p "$working_directory"
 
   fi
+
+  # Load distro from:
+  # - file (archive)
+  if [[ -f "$_build_distro" ]] ; then
+
+    _source="$_build_distro"
+    _source_cmd="tar xzfp $_source -C $working_directory"
+
+  # - directory
+  elif [[ -d "$_build_distro" ]] ; then
+
+    _source="$_build_distro"
+    _source_cmd="rsync -a --delete ${_source}/ $working_directory"
+
+  # - external repository
+  else
+
+    _source="$_build_distro"
+    _source_cmd="deboostrap --arch amd64 $_source $working_directory http://ftp.pl.debian.org/debian"
+
+  fi
+
+  _build "$_source_cmd"
 
   # ````````````````````````````````````````````````````````````````````````````
 
