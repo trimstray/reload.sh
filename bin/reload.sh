@@ -315,8 +315,6 @@ function _rand() {
 
   _rval=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$_length" | head -n 1)
 
-  return "$_rval"
-
 }
 
 
@@ -482,14 +480,17 @@ function __main__() {
 
   fi
 
-  local _working_directory _base_directory
+  local base_directory
+  local working_directory
 
-  _working_directory="/mnt/$(_rand 32)"
-  _base_directory="/mnt/base"
+  base_directory="/mnt/base"
 
-  if [[ ! -d "$_working_directory" ]] ; then
+  # Randomize working directory name.
+  _rand 32 ; working_directory="/mnt/$_rval"
 
-    mkdir -p "$_working_directory"
+  if [[ ! -d "$working_directory" ]] ; then
+
+    mkdir -p "$working_directory"
 
   fi
 
