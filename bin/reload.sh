@@ -212,7 +212,7 @@ function _init_cmd() {
   local _FUNCTION_ID="_init_cmd"
   local _STATE="0"
 
-  local _cmd="$1"
+  local _cmd="$*"
 
   # If the scanning command returns an error, we try again.
   # shellcheck disable=SC2086,SC2154
@@ -314,6 +314,46 @@ function _rand() {
   local _length="$1"
 
   _rval=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$_length" | head -n 1)
+
+}
+
+# ``````````````````````````````````````````````````````````````````````````````
+# Function name: _build()
+#
+# Description:
+#   Build destination directory.
+#
+# Usage:
+#   _build <path>
+#
+# Examples:
+#   _build "/mnt/system"
+#
+
+function _build() {
+
+  local _FUNCTION_ID="_build"
+  local _STATE="0"
+
+  local _dst="$1"
+
+  # Load distro from:
+  # - file (archive)
+  if [[ -f "$_build_distro" ]] ; then
+
+    _source_cmd="tar xzfp $_build_distro -C $_dst"
+
+  # - directory
+  elif [[ -d "$_build_distro" ]] ; then
+
+    _source_cmd="rsync -a --delete ${_build_distro}/ $_dst"
+
+  # - external repository
+  else
+
+    _source_cmd="deboostrap --arch amd64 $_build_distro $_dst http://ftp.pl.debian.org/debian"
+
+  fi
 
 }
 
@@ -481,8 +521,12 @@ function __main__() {
   fi
 
   local base_directory
+
   local init_directory
   local xmem_directory
+
+  local old_directory
+  local tmp_directory
 
   local _source_cmd
 
@@ -490,7 +534,9 @@ function __main__() {
 
   # Randomize working directory name.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
-  _rand 32 ; xmem_directory="${init_directory}/mnt/${_rval}"
+  _rand 32 ; xmem_directory="${base_directory}/${_rval}"
+  _rand 32 ; old_directory="${base_directory}/${_rval}"
+  _rand 32 ; tmp_directory="${base_directory}/${_rval}"
 
   if [[ ! -d "$init_directory" ]] ; then
 
@@ -498,41 +544,26 @@ function __main__() {
 
   fi
 
-  # Load distro from:
-  # - file (archive)
-  if [[ -f "$_build_distro" ]] ; then
-
-    _source_cmd="tar xzfp $_build_distro -C $init_directory"
-
-  # - directory
-  elif [[ -d "$_build_distro" ]] ; then
-
-    _source_cmd="rsync -a --delete ${_build_distro}/ $init_directory"
-
-  # - external repository
-  else
-
-    _source_cmd="deboostrap --arch amd64 $_build_distro $init_directory http://ftp.pl.debian.org/debian"
-
-  fi
+  _build "$init_directory"
 
   _init_cmd "$_source_cmd"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
 
-    mount -o bind /${i} ${init_directory}/${i}
+    _init_cmd "mount -o bind /${i} ${init_directory}/${i}"
 
   done
 
-  if [[ ! -d "$xmem_directory" ]] ; then
+  if [[ ! -d "${init_directory}/${xmem_directory}" ]] ; then
 
-    mkdir -p "$xmem_directory"
+    mkdir -p "${init_directory}/${xmem_directory}"
 
   fi
 
-  # It's stupid but...
-  mount --bind  "$init_directory" "$xmem_directory"
+  _build "$tmp_directory"
+
+  _init_cmd "$_source_cmd"
 
   # ````````````````````````````````````````````````````````````````````````````
 
