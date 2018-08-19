@@ -279,6 +279,7 @@ function _help_() {
 
   Options:
         --help                show this message
+        --build <distro>      build linux distribution (default: jessie)
 
 
   This program comes with ABSOLUTELY NO WARRANTY.
@@ -348,6 +349,10 @@ function __main__() {
   # Default random value.
   export _rval=0
 
+  # Default values for --build param.
+  local build_distro_state=0
+  local _build_distro="jessie"
+
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
   readonly commands=(basename dirname)
@@ -390,7 +395,7 @@ function __main__() {
   # Specifies the call parameters of the script, the exact description
   # can be found in _help_ and file README.md.
   local _short_opt=""
-  local _long_opt="help"
+  local _long_opt="help,build:"
 
   _GETOPT_PARAMS=$(getopt -o "${_short_opt}" --long "${_long_opt}" \
                    -n "${_init_name}" -- "${__script_params[@]}")
@@ -420,6 +425,14 @@ function __main__() {
 
         shift ; _exit_ "0" ;;
 
+      --build)
+
+        export build_distro_state=1
+
+        export _build_distro="${2}"
+
+        shift 2 ;;
+
       *)
 
         if [[ "$2" == "-" ]] || [[ ! -z "$2" ]] ; then
@@ -446,7 +459,7 @@ function __main__() {
   # or selected parameters without which the script can not work properly
   # have been used. Do not add the load_state variable to the _opt_values array,
   # which is supported above.
-  _opt_values=()
+  _opt_values=("build_distro_state" "_build_distro")
 
   # Checking the value of the variables (if they are unset or empty):
   #   - variables for call parameters
