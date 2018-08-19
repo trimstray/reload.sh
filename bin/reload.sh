@@ -505,18 +505,20 @@ function __main__() {
   fi
 
   local base_directory
-  local working_directory
+  local init_directory
+  local xmem_directory
 
   local _source_cmd
 
   base_directory="/mnt"
 
   # Randomize working directory name.
-  _rand 32 ; working_directory="${base_directory}/${_rval}"
+  _rand 32 ; init_directory="${base_directory}/${_rval}"
+  _rand 32 ; xmem_directory="${init_directory}/mnt/${_rval}"
 
-  if [[ ! -d "$working_directory" ]] ; then
+  if [[ ! -d "$init_directory" ]] ; then
 
-    mkdir -p "$working_directory"
+    mkdir -p "$init_directory"
 
   fi
 
@@ -524,17 +526,17 @@ function __main__() {
   # - file (archive)
   if [[ -f "$_build_distro" ]] ; then
 
-    _source_cmd="tar xzfp $_build_distro -C $working_directory"
+    _source_cmd="tar xzfp $_build_distro -C $init_directory"
 
   # - directory
   elif [[ -d "$_build_distro" ]] ; then
 
-    _source_cmd="rsync -a --delete ${_build_distro}/ $working_directory"
+    _source_cmd="rsync -a --delete ${_build_distro}/ $init_directory"
 
   # - external repository
   else
 
-    _source_cmd="deboostrap --arch amd64 $_build_distro $working_directory http://ftp.pl.debian.org/debian"
+    _source_cmd="deboostrap --arch amd64 $_build_distro $init_directory http://ftp.pl.debian.org/debian"
 
   fi
 
@@ -543,7 +545,7 @@ function __main__() {
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
 
-    mount -o bind $i ${working_directory}/${i}
+    mount -o bind $i ${init_directory}/${i}
 
   done
 
