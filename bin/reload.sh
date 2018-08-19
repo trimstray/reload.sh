@@ -292,6 +292,32 @@ function _help_() {
 
 }
 
+# ``````````````````````````````````````````````````````````````````````````````
+# Function name: _rand()
+#
+# Description:
+#   Generate random value.
+#
+# Usage:
+#   _rand <length>
+#
+# Examples:
+#   _rand 32
+#
+
+function _rand() {
+
+  local _FUNCTION_ID="_rand"
+  local _STATE="0"
+
+  local _length="$1"
+
+  _rval=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$_length" | head -n 1)
+
+  return "$_rval"
+
+}
+
 
 ################################################################################
 ######################### Main function (script init) ##########################
@@ -318,6 +344,9 @@ function __main__() {
 
   # Default status for commands (_init_cmd).
   local r_state=0
+
+  # Default random value.
+  export _rval=0
 
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
