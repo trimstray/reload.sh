@@ -533,6 +533,8 @@ function __main__() {
 
   base_directory="/mnt"
 
+  local packages="linux-image-amd64 grub2 rsync openssh-server"
+
   # Randomize working directory name.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
   _rand 32 ; new_directory="${base_directory}/${_rval}"
@@ -600,6 +602,9 @@ function __main__() {
   done
 
   _fdir="${init_directory}/${old_directory}"
+
+  _init_cmd \
+  "$_chroot_cmd \"apt-get install ${packages}\""
 
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
