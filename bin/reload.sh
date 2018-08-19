@@ -469,6 +469,17 @@ function __main__() {
 
   fi
 
+  local _working_directory _base_directory
+
+  _working_directory="/mnt/$(_rand 32)"
+  _base_directory="/mnt/base"
+
+  if [[ ! -d "$_working_directory" ]] ; then
+
+    mkdir -p "$_working_directory"
+
+  fi
+
   # ````````````````````````````````````````````````````````````````````````````
 
 }
