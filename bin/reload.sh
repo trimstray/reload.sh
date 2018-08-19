@@ -335,7 +335,7 @@ function _build() {
   local _FUNCTION_ID="_build"
   local _STATE="0"
 
-  local _src_cmd="$1"
+  local _src_cmd="$*"
 
   "$_src_cmd"
 
@@ -507,7 +507,7 @@ function __main__() {
   local base_directory
   local working_directory
 
-  local _source _source_cmd
+  local _source_cmd
 
   base_directory="/mnt"
 
@@ -524,24 +524,21 @@ function __main__() {
   # - file (archive)
   if [[ -f "$_build_distro" ]] ; then
 
-    _source="$_build_distro"
-    _source_cmd="tar xzfp $_source -C $working_directory"
+    _source_cmd="tar xzfp $_build_distro -C $working_directory"
 
   # - directory
   elif [[ -d "$_build_distro" ]] ; then
 
-    _source="$_build_distro"
-    _source_cmd="rsync -a --delete ${_source}/ $working_directory"
+    _source_cmd="rsync -a --delete ${_build_distro}/ $working_directory"
 
   # - external repository
   else
 
-    _source="$_build_distro"
-    _source_cmd="deboostrap --arch amd64 $_source $working_directory http://ftp.pl.debian.org/debian"
+    _source_cmd="deboostrap --arch amd64 $_build_distro $working_directory http://ftp.pl.debian.org/debian"
 
   fi
 
-  _build "$_source_cmd"
+  _init_cmd "$_source_cmd"
 
   # ````````````````````````````````````````````````````````````````````````````
 
