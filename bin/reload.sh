@@ -317,30 +317,6 @@ function _rand() {
 
 }
 
-# ``````````````````````````````````````````````````````````````````````````````
-# Function name: _build()
-#
-# Description:
-#   Build temporary GNU/Linux distribution.
-#
-# Usage:
-#   _build <command>
-#
-# Examples:
-#   _build "tar xzfp /mnt/archive.tgz -C /mnt/system"
-#
-
-function _build() {
-
-  local _FUNCTION_ID="_build"
-  local _STATE="0"
-
-  local _src_cmd="$*"
-
-  "$_src_cmd"
-
-}
-
 
 ################################################################################
 ######################### Main function (script init) ##########################
@@ -555,6 +531,7 @@ function __main__() {
 
   fi
 
+  # It's stupid but...
   mount --bind  "$init_directory" "$xmem_directory"
 
   # ````````````````````````````````````````````````````````````````````````````
