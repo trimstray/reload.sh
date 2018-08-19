@@ -341,17 +341,17 @@ function _build() {
   # - file (archive)
   if [[ -f "$_build_distro" ]] ; then
 
-    _source_cmd="tar xzfp $_build_distro -C $_dst"
+    _scmd="tar xzfp $_build_distro -C $_dst"
 
   # - directory
   elif [[ -d "$_build_distro" ]] ; then
 
-    _source_cmd="rsync -a --delete ${_build_distro}/ $_dst"
+    _scmd="rsync -a --delete ${_build_distro}/ $_dst"
 
   # - external repository
   else
 
-    _source_cmd="deboostrap --arch amd64 $_build_distro $_dst http://ftp.pl.debian.org/debian"
+    _scmd="deboostrap --arch amd64 $_build_distro $_dst http://ftp.pl.debian.org/debian"
 
   fi
 
@@ -523,20 +523,25 @@ function __main__() {
   local base_directory
 
   local init_directory
-  local xmem_directory
+  local new_directory
 
   local old_directory
   local tmp_directory
 
-  local _source_cmd
+  local _fdir
+  local _scmd
 
   base_directory="/mnt"
 
   # Randomize working directory name.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
-  _rand 32 ; xmem_directory="${base_directory}/${_rval}"
+  _rand 32 ; new_directory="${base_directory}/${_rval}"
   _rand 32 ; old_directory="${base_directory}/${_rval}"
   _rand 32 ; tmp_directory="${base_directory}/${_rval}"
+
+  _fdir="$init_directory"
+
+  local _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
   if [[ ! -d "$init_directory" ]] ; then
 
@@ -546,7 +551,7 @@ function __main__() {
 
   _build "$init_directory"
 
-  _init_cmd "$_source_cmd"
+  _init_cmd "$_scmd"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -555,15 +560,52 @@ function __main__() {
 
   done
 
-  if [[ ! -d "${init_directory}/${xmem_directory}" ]] ; then
+  if [[ ! -d "${init_directory}/${new_directory}" ]] ; then
 
-    mkdir -p "${init_directory}/${xmem_directory}"
+    mkdir -p "${init_directory}/${new_directory}"
 
   fi
 
   _build "$tmp_directory"
 
-  _init_cmd "$_source_cmd"
+  _init_cmd "$_scmd"
+
+  _init_cmd \
+  "mount --bind $tmp_directory ${init_directory}/${new_directory}"
+
+  _init_cmd \
+  "$_chroot_cmd \"grep -v rootfs /proc/mounts > /etc/mtab\""
+
+  if [[ ! -d "${init_directory}/${old_directory}" ]] ; then
+
+    _init_cmd \
+    "$_chroot_cmd \"mkdir -p $old_directory\""
+
+  fi
+
+  _init_cmd \
+  "$_chroot_cmd \"mount /dev/vda1 $old_directory\""
+
+  local _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
+
+  _init_cmd \
+  "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${new_directory}/ ${old_directory}\""
+
+  # Mount filesystems.
+  for i in proc sys dev dev/pts ; do
+
+    _init_cmd \
+    "$_chroot_cmd \"mount -o bind /${i} ${old_directory}/${i}\""
+
+  done
+
+  _fdir="${init_directory}/${old_directory}"
+
+  _init_cmd \
+  "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
+
+  _init_cmd \
+  "$_chroot_cmd \"update-grub\""
 
   # ````````````````````````````````````````````````````````````````````````````
 
