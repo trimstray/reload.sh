@@ -325,10 +325,10 @@ function _rand() {
 #   Build destination directory.
 #
 # Usage:
-#   _build <path>
+#   _build <src_path> <dst_path>
 #
 # Examples:
-#   _build "/mnt/system"
+#   _build "/mnt/base" "/mnt/system"
 #
 
 function _build() {
@@ -336,23 +336,24 @@ function _build() {
   local _FUNCTION_ID="_build"
   local _STATE="0"
 
-  local _dst="$1"
+  local _src="$1"
+  local _dst="$2"
 
   # Load distro from:
   # - file (archive)
-  if [[ -f "$_build_distro" ]] ; then
+  if [[ -f "$_src" ]] ; then
 
-    _scmd="tar xzfp $_build_distro -C $_dst"
+    _scmd="tar xzfp $_src -C $_dst"
 
   # - directory
-  elif [[ -d "$_build_distro" ]] ; then
+  elif [[ -d "$_src" ]] ; then
 
-    _scmd="rsync -a --delete ${_build_distro}/ $_dst"
+    _scmd="rsync -a --delete ${_src}/ $_dst"
 
   # - external repository
   else
 
-    _scmd="deboostrap --arch amd64 $_build_distro $_dst http://ftp.pl.debian.org/debian"
+    _scmd="deboostrap --arch amd64 $_src $_dst http://ftp.pl.debian.org/debian"
 
   fi
 
