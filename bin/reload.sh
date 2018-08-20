@@ -304,7 +304,7 @@ function _help_() {
 #   _rand <length>
 #
 # Examples:
-#   _rand 32
+#   _rand 16
 #
 
 function _rand() {
@@ -503,6 +503,16 @@ function __main__() {
 
   done
 
+  # Set default colors for printf.
+  # shellcheck disable=SC2034
+  local b_trgb="0;1;30"
+  # shellcheck disable=SC2034
+  local c_trgb="1;1;36"
+  # shellcheck disable=SC2034
+  local s_trgb="0;2;39"
+  # shellcheck disable=SC2034
+  local w_trgb="1;1;49"
+
   ################################# USER SPACE #################################
   # ````````````````````````````````````````````````````````````````````````````
   # Put here all your variable declarations, function calls
@@ -544,10 +554,10 @@ function __main__() {
   local init_directory
 
   local build_directory
-  local old_directory
+  local running_directory
 
-  # Stores system that visible from chroot in build_directory and old_directory.
-  local tmp_directory
+  # Stores system that visible from chroot in build_directory and running_directory.
+  local src_directory
 
   local _fdir
   local _scmd
@@ -564,15 +574,24 @@ function __main__() {
 
   # ````````````````````````````````````````````````````````````````````````````
 
-  printf "%s\\n" "Phase 1"
 
-  printf "  %s\\n" "randomization of working directory names"
+  # Phase 1:
+  #   - randomization of working directory names
+  #   - create init directory
+
+  local _phase_counter=1
+
+  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+         "Phase" "$_phase_counter"
+
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "randomization of working directory names"
 
   # Randomization of working directory names.
-  _rand 32 ; init_directory="${base_directory}/${_rval}"
-  _rand 32 ; build_directory="${base_directory}/${_rval}"
-  _rand 32 ; old_directory="${base_directory}/${_rval}"
-  _rand 32 ; tmp_directory="${base_directory}/${_rval}"
+  _rand 16 ; init_directory="${base_directory}/${_rval}"
+  _rand 16 ; build_directory="${base_directory}/${_rval}"
+  _rand 16 ; running_directory="${base_directory}/${_rval}"
+  _rand 16 ; src_directory="${base_directory}/${_rval}"
 
   _fdir="$init_directory"
 
@@ -580,25 +599,34 @@ function __main__() {
 
   if [[ ! -d "$init_directory" ]] ; then
 
+    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+           "create $init_directory"
+
     mkdir -p "$init_directory"
 
   fi
+
+  _phase_counter=$((_phase_counter + 1))
 
 
   # ````````````````````````````````````````````````````````````````````````````
 
 
-  printf "%s\\n" "Phase 2"
-
-  # Phase 1:
-  #   - init base system (sync from _build_distro)
+  # Phase 2:
+  #   - build base system (from _base_distro)
   #   - mount proc sys dev dev/pts
+  #   - create build directory
 
-  printf "  %s\\n" "init base system"
+  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+         "Phase" "$_phase_counter"
+
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "build base system"
 
   _build "$_base_distro" "$init_directory"
 
-  printf "  %s\\n" "mount filesystems"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -609,99 +637,134 @@ function __main__() {
 
   if [[ ! -d "${init_directory}/${build_directory}" ]] ; then
 
+    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+           "create ${init_directory}/${build_directory}"
+
     mkdir -p "${init_directory}/${build_directory}"
 
   fi
 
+  _phase_counter=$((_phase_counter + 1))
+
 
   # ````````````````````````````````````````````````````````````````````````````
 
 
-  printf "%s\\n" "Phase 3"
+  # Phase 3:
+  #   - set source variables
+  #   - mount source directory to build directory
 
-  # Phase 2:
-  #   - init temporary-system (sync from _build_distro)
-  #   - regenerate /etc/mtab file
+  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+         "Phase" "$_phase_counter"
 
-  printf "  %s\\n" "init temporary-system"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "set source variables"
 
-  _build "$_base_distro" "$tmp_directory"
+  readonly src_file="$(basename "$_build_distro")"
+  readonly src_directory="$(dirname "$(readlink -f "$_build_distro")")"
 
-  printf "  %s\\n" "mount directories"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "mount $src_directory to ${init_directory}/${build_directory}"
 
   _init_cmd \
-  "mount --bind $tmp_directory ${init_directory}/${build_directory}"
+  "mount --bind $src_directory ${init_directory}/${build_directory}"
 
-  printf "  %s\\n" "regenerate /etc/mtab file"
+  if [[ ! -d "${init_directory}/${running_directory}" ]] ; then
 
-  _init_cmd \
-  "$_chroot_cmd \"grep -v rootfs /proc/mounts > /etc/mtab\""
-
-  if [[ ! -d "${init_directory}/${old_directory}" ]] ; then
+    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+           "create $running_directory"
 
     _init_cmd \
-    "$_chroot_cmd \"mkdir -p $old_directory\""
+    "$_chroot_cmd \"mkdir -p $running_directory\""
 
   fi
 
+  _phase_counter=$((_phase_counter + 1))
+
 
   # ````````````````````````````````````````````````````````````````````````````
 
 
-  printf "%s\\n" "Phase 4"
-
-  # Phase 3:
-  #   - mount root filesystem (from base disk)
-  #   - sync without excluded directories
+  # Phase 4:
+  #   - mount root filesystem (from current disk)
+  #   - sync without excluded system directories
   #   - mount proc sys dev dev/pts
 
-  printf "  %s\\n" "mount root filesystem"
+  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+         "Phase" "$_phase_counter"
+
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "mount root filesystem"
 
   _init_cmd \
-  "$_chroot_cmd \"mount /dev/vda1 $old_directory\""
+  "$_chroot_cmd \"mount /dev/vda1 $running_directory\""
 
-  printf "  %s\\n" "sync without excluded directories"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "sync without excluded system directories"
+
+  # shellcheck disable=SC2012
+  _init_cmd \
+  "$_chroot_cmd \"cd ${running_directory} && for i in $(ls  | awk '!(/proc/ || /dev/ || /sys/ || /mnt/)') ; do rm -fr $i ; done\""
 
   _init_cmd \
-  "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${build_directory}/ ${old_directory}\""
+  "$_chroot_cmd \"tar xzvfp \"${build_directory}/${src_file}\" -C ${running_directory}\""
 
-  printf "  %s\\n" "mount filesystems"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
 
     _init_cmd \
-    "$_chroot_cmd \"mount -o bind /${i} ${old_directory}/${i}\""
+    "$_chroot_cmd \"mount -o bind /${i} ${running_directory}/${i}\""
 
   done
+
+  _phase_counter=$((_phase_counter + 1))
 
 
   # ````````````````````````````````````````````````````````````````````````````
 
 
-  printf "%s\\n" "Phase 5"
-
   # Phase 4:
-  #   - post install jobs
-  _fdir="${init_directory}/${old_directory}"
+  #   - install grub bootloader
+  #   - update grub configuration
+  #   - init sysrq-trigger
+
+  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+         "Phase" "$_phase_counter"
+
+  _fdir="${init_directory}/${running_directory}"
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
-  printf "  %s\\n" "install bootloader"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "install grub bootloader"
 
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
 
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "update grub configuration"
+
   _init_cmd \
   "$_chroot_cmd \"update-grub\""
 
-  printf "  %s\\n" "init sysrq"
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+         "init sysrq-trigger"
 
   _init_cmd \
   "$_chroot_cmd \"echo 1 > /proc/sys/kernel/sysrq\""
 
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
+
+  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n\n' \
+         "init new environment"
+
+  chroot "${init_directory}/${running_directory}" /bin/bash
+
+  _phase_counter=$((_phase_counter + 1))
 
 
   # ````````````````````````````````````````````````````````````````````````````
