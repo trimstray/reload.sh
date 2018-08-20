@@ -279,8 +279,8 @@ function _help_() {
 
   Options:
         --help                        show this message
-        --base <distro|dir|archive>   set init distro
-        --build <dir|archive>         build linux distribution
+        --base <dir|archive>          set minimal base distro (optional param)
+        --build <archive>             set your system backup archive (tar + gz)
 
 
   This program comes with ABSOLUTELY NO WARRANTY.
@@ -774,12 +774,10 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
-  # printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
-  #        "init new environment for user tasks"
+  printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
+         "init new environment (ctrl+d or exit to drop environment)"
 
-  # chroot "${init_directory}/${running_directory}" /bin/bash
-
-  systemctl enable sshd && systemctl restart sshd
+  chroot "${init_directory}/${running_directory}" /bin/bash
 
   _phase_counter=$((_phase_counter + 1))
 
