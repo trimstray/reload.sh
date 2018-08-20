@@ -543,14 +543,7 @@ function __main__() {
 
   base_directory="/mnt"
 
-  _excl="\"/proc/*\",\
-         \"/dev/*\",\
-         \"/sys/*\",\
-         \"/tmp/*\",\
-         \"/run/*\",\
-         \"/mnt/*\",\
-         \"/media/*\",\
-         \"/lost+found\""
+  _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
 
   # Randomization of working directory names.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
