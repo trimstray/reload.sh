@@ -543,10 +543,10 @@ function __main__() {
   # Init system directory.
   local init_directory
 
-  local new_directory
+  local build_directory
   local old_directory
 
-  # Stores system that visible from chroot in new_directory and old_directory.
+  # Stores system that visible from chroot in build_directory and old_directory.
   local tmp_directory
 
   local _fdir
@@ -570,7 +570,7 @@ function __main__() {
 
   # Randomization of working directory names.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
-  _rand 32 ; new_directory="${base_directory}/${_rval}"
+  _rand 32 ; build_directory="${base_directory}/${_rval}"
   _rand 32 ; old_directory="${base_directory}/${_rval}"
   _rand 32 ; tmp_directory="${base_directory}/${_rval}"
 
@@ -596,7 +596,7 @@ function __main__() {
 
   printf "  %s\\n" "init base system"
 
-  _build "$init_directory"
+  _build "$_base_distro" "$init_directory"
 
   printf "  %s\\n" "mount filesystems"
 
@@ -607,9 +607,9 @@ function __main__() {
 
   done
 
-  if [[ ! -d "${init_directory}/${new_directory}" ]] ; then
+  if [[ ! -d "${init_directory}/${build_directory}" ]] ; then
 
-    mkdir -p "${init_directory}/${new_directory}"
+    mkdir -p "${init_directory}/${build_directory}"
 
   fi
 
@@ -625,12 +625,12 @@ function __main__() {
 
   printf "  %s\\n" "init temporary-system"
 
-  _build "$tmp_directory"
+  _build "$_base_distro" "$tmp_directory"
 
   printf "  %s\\n" "mount directories"
 
   _init_cmd \
-  "mount --bind $tmp_directory ${init_directory}/${new_directory}"
+  "mount --bind $tmp_directory ${init_directory}/${build_directory}"
 
   printf "  %s\\n" "regenerate /etc/mtab file"
 
@@ -663,7 +663,7 @@ function __main__() {
   printf "  %s\\n" "sync without excluded directories"
 
   _init_cmd \
-  "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${new_directory}/ ${old_directory}\""
+  "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${build_directory}/ ${old_directory}\""
 
   printf "  %s\\n" "mount filesystems"
 
