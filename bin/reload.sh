@@ -584,7 +584,7 @@ function __main__() {
   printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
          "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "randomization of working directory names"
 
   # Randomization of working directory names.
@@ -599,7 +599,7 @@ function __main__() {
 
   if [[ ! -d "$init_directory" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
            "create $init_directory"
 
     mkdir -p "$init_directory"
@@ -620,12 +620,12 @@ function __main__() {
   printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
          "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "build base system"
 
   _build "$_base_distro" "$init_directory"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
@@ -637,7 +637,7 @@ function __main__() {
 
   if [[ ! -d "${init_directory}/${build_directory}" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
            "create ${init_directory}/${build_directory}"
 
     mkdir -p "${init_directory}/${build_directory}"
@@ -657,13 +657,13 @@ function __main__() {
   printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
          "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "set source variables"
 
   readonly src_file="$(basename "$_build_distro")"
   readonly src_directory="$(dirname "$(readlink -f "$_build_distro")")"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "mount $src_directory to ${init_directory}/${build_directory}"
 
   _init_cmd \
@@ -671,7 +671,7 @@ function __main__() {
 
   if [[ ! -d "${init_directory}/${running_directory}" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
            "create $running_directory"
 
     _init_cmd \
@@ -693,13 +693,13 @@ function __main__() {
   printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
          "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "mount root filesystem"
 
   _init_cmd \
   "$_chroot_cmd \"mount /dev/vda1 $running_directory\""
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "sync without excluded system directories"
 
   # shellcheck disable=SC2012
@@ -709,7 +709,7 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"tar xzvfp \"${build_directory}/${src_file}\" -C ${running_directory}\""
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
@@ -738,19 +738,19 @@ function __main__() {
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "install grub bootloader"
 
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "update grub configuration"
 
   _init_cmd \
   "$_chroot_cmd \"update-grub\""
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "init sysrq-trigger"
 
   _init_cmd \
@@ -759,7 +759,7 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
-  printf '  \e['${b_trgb}'m»\e[m \e['${s_trgb}'m%s\e[m\n\n' \
+  printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
          "init new environment"
 
   chroot "${init_directory}/${running_directory}" /bin/bash
