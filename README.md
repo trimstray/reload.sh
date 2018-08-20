@@ -2,6 +2,11 @@
 
 Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process.
 
+<p align="center">
+    <img src="https://i.imgur.com/FCQl7pQ.gif"
+         alt="Master">
+</p>
+
 ## How it works?
 
 Set your archive with system backup to restore:
@@ -23,13 +28,6 @@ Init `reload.sh`:
 ```bash
 ./bin/reload.sh --base "$_base" --build "$_build"
 ```
-
-## Preview
-
-<p align="center">
-    <img src="https://i.imgur.com/FCQl7pQ.gif"
-         alt="Master">
-</p>
 
 ## Contributions
 
