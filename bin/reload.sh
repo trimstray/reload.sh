@@ -39,7 +39,7 @@
 __init_params=()
 __script_params=("$@")
 
-readonly _version="v1.0"
+readonly _version="v1.0.0"
 
 # Store the name of the script and directory call.
 readonly _init_name="$(basename "$0")"
@@ -523,8 +523,7 @@ function __main__() {
   # or selected parameters without which the script can not work properly
   # have been used. Do not add the load_state variable to the _opt_values array,
   # which is supported above.
-  _opt_values=("base_distro_state" "_base_distro" \
-               "build_distro_state" "_build_distro")
+  _opt_values=("build_distro_state" "_build_distro")
 
   # Checking the value of the variables (if they are unset or empty):
   #   - variables for call parameters
@@ -567,9 +566,14 @@ function __main__() {
   # Commands that uses in chroot environment.
   local _chroot_cmd
 
+  # Packages list.
+  local _packages
+
   base_directory="/mnt"
 
   _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
+
+  _packages="linux-image-amd64,grub2,rsync"
 
 
   # ````````````````````````````````````````````````````````````````````````````
@@ -623,7 +627,18 @@ function __main__() {
   printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "build base system"
 
-  _build "$_base_distro" "$init_directory"
+  if [[ "$base_distro_state" -eq 1 ]] ; then
+
+    _build "$_base_distro" "$init_directory"
+
+  else
+
+    _init_cmd "debootstrap \
+              --verbose --variant=minbase --include=$_packages --arch amd64 jessie \
+              $init_directory \
+              http://ftp.pl.debian.org/debian"
+
+  fi
 
   printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "mount filesystems: proc sys dev dev/pts"
@@ -760,9 +775,11 @@ function __main__() {
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
   printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
-         "init new environment"
+         "init new environment for user tasks"
 
   chroot "${init_directory}/${running_directory}" /bin/bash
+
+  systemctl enable sshd && systemctl restart sshd
 
   _phase_counter=$((_phase_counter + 1))
 
