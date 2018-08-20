@@ -275,11 +275,12 @@ function _help_() {
     $_init_name <option|long-option>
 
   Examples:
-    $_init_name --help
+    $_init_name --build /mnt/system-backup.tgz
+    $_init_name --base /mnt/minimal-base --build /mnt/system-backup.tgz
 
   Options:
         --help                        show this message
-        --base <dir|archive>          set minimal base distro (optional param)
+        --base <dir>                  set minimal base distro (optional param)
         --build <archive>             set your system backup archive (tar + gz)
 
 
