@@ -560,7 +560,12 @@ function __main__() {
 
   _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
 
-  printf "%s\\n" "Randomization of working directory names"
+
+  # ````````````````````````````````````````````````````````````````````````````
+
+  printf "%s\\n" "Phase 1"
+
+  printf "  %s\\n" "randomization of working directory names"
 
   # Randomization of working directory names.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
@@ -578,7 +583,11 @@ function __main__() {
 
   fi
 
-  printf "%s\\n" "Phase 1"
+
+  # ````````````````````````````````````````````````````````````````````````````
+
+
+  printf "%s\\n" "Phase 2"
 
   # Phase 1:
   #   - init base system (sync from _build_distro)
@@ -603,7 +612,11 @@ function __main__() {
 
   fi
 
-  printf "%s\\n" "Phase 2"
+
+  # ````````````````````````````````````````````````````````````````````````````
+
+
+  printf "%s\\n" "Phase 3"
 
   # Phase 2:
   #   - init temporary-system (sync from _build_distro)
@@ -630,7 +643,11 @@ function __main__() {
 
   fi
 
-  printf "%s\\n" "Phase 3"
+
+  # ````````````````````````````````````````````````````````````````````````````
+
+
+  printf "%s\\n" "Phase 4"
 
   # Phase 3:
   #   - mount root filesystem (from base disk)
@@ -657,7 +674,11 @@ function __main__() {
 
   done
 
-  printf "%s\\n" "Phase 4"
+
+  # ````````````````````````````````````````````````````````````````````````````
+
+
+  printf "%s\\n" "Phase 5"
 
   # Phase 4:
   #   - post install jobs
@@ -680,6 +701,7 @@ function __main__() {
 
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
+
 
   # ````````````````````````````````````````````````````````````````````````````
 
