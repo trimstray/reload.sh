@@ -1,20 +1,35 @@
 # `reload.sh`
 
-Silly but interesting way to reinstall or restore your system without using a cd-rom, flash memory and anything you could think about this process - only from the level of the running operating system.
+Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process.
 
 ## How it works?
 
-Set your archive file with system backup:
+Set your archive with system backup to restore:
 
 ```bash
 _build="/mnt/system-backup.tgz"
 ```
 
-Run `reload.sh`:
+Set path to temporary system (optional):
 
 ```bash
-./bin/reload.sh --base /mnt/minimal-base --build "$_build"
+_base="/mnt/minimal-base"
 ```
+
+  > If you do not specify this parameter, the temporary system will be downloaded automatically.
+
+Init `reload.sh`:
+
+```bash
+./bin/reload.sh --base "$_base" --build "$_build"
+```
+
+## Preview
+
+<p align="center">
+    <img src="https://i.imgur.com/FCQl7pQ.gif"
+         alt="Master">
+</p>
 
 ## Contributions
 
