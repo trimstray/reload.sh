@@ -774,10 +774,10 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
-         "init new environment for user tasks"
+  # printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
+  #        "init new environment for user tasks"
 
-  chroot "${init_directory}/${running_directory}" /bin/bash
+  # chroot "${init_directory}/${running_directory}" /bin/bash
 
   systemctl enable sshd && systemctl restart sshd
 
