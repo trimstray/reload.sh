@@ -4,7 +4,7 @@
 #
 # Header:
 #
-#         fname : "reload.shm"
+#         fname : "reload.sh"
 #         cdate : "17.08.2018"
 #        author : "Michał Żurawski <trimstray@gmail.com>"
 #      tab_size : "2"
@@ -16,7 +16,7 @@
 #
 # License:
 #
-#   reload.shm, Copyright (C) 2018  Michał Żurawski
+#   reload.sh, Copyright (C) 2018  Michał Żurawski
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
