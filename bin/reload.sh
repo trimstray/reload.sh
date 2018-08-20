@@ -369,7 +369,7 @@ function __main__() {
   local _STATE="0"
 
   # shellcheck disable=2154
-  cd "$_init_directory" || _exit
+  cd "$_init_directory" || _exit_ 1
 
   # Stores the current date.
   readonly _cdate=$(date +%Y%m%d)
@@ -533,8 +533,6 @@ function __main__() {
   local _scmd
 
   base_directory="/mnt"
-
-  local packages="linux-image-amd64 grub2 rsync openssh-server"
 
   # Randomize working directory name.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
