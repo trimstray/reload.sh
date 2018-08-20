@@ -2,14 +2,6 @@
 
 Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process.
 
-## How it works?
-
-  > At this moment supports only debian-like distributions.
-
-```bash
-./bin/reload.sh --base /tmp/base --build /tmp/system.tgz
-```
-
 ## Contributions
 
 Suggestions and pull requests are welcome. See also **[this](CONTRIBUTING.md)**.
