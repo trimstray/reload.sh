@@ -401,7 +401,7 @@ function __main__() {
 
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
-  readonly commands=(basename dirname)
+  readonly commands=(basename dirname debootstrap rsync tar)
 
   # If you intend to specify the full path to the command we do it like:
   # readonly exec_gzip="/bin/gzip"
