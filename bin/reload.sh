@@ -521,28 +521,44 @@ function __main__() {
 
   fi
 
+  # Base directory: /mnt
   local base_directory
 
+  # First-system directory.
   local init_directory
-  local new_directory
 
+  local new_directory
   local old_directory
+
+  # Stores system that visible from chroot in new_directory and old_directory.
   local tmp_directory
 
   local _fdir
   local _scmd
 
+  local _excl
+
+  # Commands that uses in chroot environment.
+  local _chroot_cmd
+
   base_directory="/mnt"
 
-  # Randomize working directory name.
+  _excl="\"/proc/*\",\
+         \"/dev/*\",\
+         \"/sys/*\",\
+         \"/tmp/*\",\
+         \"/run/*\",\
+         \"/mnt/*\",\
+         \"/media/*\",\
+         \"/lost+found\""
+
+  # Randomization of working directory names.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
   _rand 32 ; new_directory="${base_directory}/${_rval}"
   _rand 32 ; old_directory="${base_directory}/${_rval}"
   _rand 32 ; tmp_directory="${base_directory}/${_rval}"
 
   _fdir="$init_directory"
-
-  local _chroot_cmd
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
@@ -552,6 +568,9 @@ function __main__() {
 
   fi
 
+  # Phase 1:
+  #   - init base system (sync from _build_distro)
+  #   - mount proc sys dev dev/pts
   _build "$init_directory"
 
   _init_cmd "$_scmd"
@@ -569,6 +588,9 @@ function __main__() {
 
   fi
 
+  # Phase 2:
+  #   - init temporary-system (sync from _build_distro)
+  #   - regenerate /etc/mtab file
   _build "$tmp_directory"
 
   _init_cmd "$_scmd"
@@ -586,10 +608,12 @@ function __main__() {
 
   fi
 
+  # Phase 3:
+  #   - mount root filesystem (from base disk)
+  #   - sync without excluded directories
+  #   - mount proc sys dev dev/pts
   _init_cmd \
   "$_chroot_cmd \"mount /dev/vda1 $old_directory\""
-
-  local _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
 
   _init_cmd \
   "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${new_directory}/ ${old_directory}\""
@@ -602,6 +626,8 @@ function __main__() {
 
   done
 
+  # Phase 4:
+  #   - post install jobs
   _fdir="${init_directory}/${old_directory}"
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
