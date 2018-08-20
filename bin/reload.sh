@@ -523,7 +523,7 @@ function __main__() {
   # Base directory: /mnt
   local base_directory
 
-  # First-system directory.
+  # Init system directory.
   local init_directory
 
   local new_directory
