@@ -278,8 +278,9 @@ function _help_() {
     $_init_name --help
 
   Options:
-        --help                show this message
-        --build <distro>      build linux distribution (default: jessie)
+        --help                        show this message
+        --base <distro|dir|archive>   set init distro
+        --build <dir|archive>         build linux distribution
 
 
   This program comes with ABSOLUTELY NO WARRANTY.
@@ -390,8 +391,12 @@ function __main__() {
   export _rval=0
 
   # Default values for --build param.
+  local base_distro_state=0
+  local _base_distro=""
+
+  # Default values for --build param.
   local build_distro_state=0
-  local _build_distro="jessie"
+  local _build_distro=""
 
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
@@ -435,7 +440,7 @@ function __main__() {
   # Specifies the call parameters of the script, the exact description
   # can be found in _help_ and file README.md.
   local _short_opt=""
-  local _long_opt="help,build:"
+  local _long_opt="help,base:,build:"
 
   _GETOPT_PARAMS=$(getopt -o "${_short_opt}" --long "${_long_opt}" \
                    -n "${_init_name}" -- "${__script_params[@]}")
@@ -464,6 +469,14 @@ function __main__() {
         _help_
 
         shift ; _exit_ "0" ;;
+
+      --base)
+
+        export base_distro_state=1
+
+        export _base_distro="${2}"
+
+        shift 2 ;;
 
       --build)
 
@@ -499,7 +512,8 @@ function __main__() {
   # or selected parameters without which the script can not work properly
   # have been used. Do not add the load_state variable to the _opt_values array,
   # which is supported above.
-  _opt_values=("build_distro_state" "_build_distro")
+  _opt_values=("base_distro_state" "_base_distro" \
+               "build_distro_state" "_build_distro")
 
   # Checking the value of the variables (if they are unset or empty):
   #   - variables for call parameters
