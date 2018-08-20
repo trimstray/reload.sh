@@ -355,6 +355,8 @@ function _build() {
 
   fi
 
+  _init_cmd "$_scmd"
+
 }
 
 
@@ -572,8 +574,6 @@ function __main__() {
 
   _build "$init_directory"
 
-  _init_cmd "$_scmd"
-
   printf "  %s\\n" "mount filesystems"
 
   # Mount filesystems.
@@ -598,8 +598,6 @@ function __main__() {
   printf "  %s\\n" "init temporary-system"
 
   _build "$tmp_directory"
-
-  _init_cmd "$_scmd"
 
   printf "  %s\\n" "mount directories"
 
