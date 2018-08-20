@@ -4,13 +4,13 @@ Silly but interesting way to reinstall your system without using a cd-rom, flash
 
 ## How it works?
 
-Set your system backup to restore:
+Set your archive file with system backup:
 
 ```bash
 _build="/mnt/system-backup.tgz"
 ```
 
-Init `reload.sh`:
+Run `reload.sh`:
 
 ```bash
 ./bin/reload.sh --base /mnt/minimal-base --build "$_build"
