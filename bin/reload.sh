@@ -570,6 +570,9 @@ function __main__() {
   # Packages list.
   local _packages
 
+  # Root device.
+  local _rdev
+
   base_directory="/mnt"
 
   _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
@@ -755,10 +758,15 @@ function __main__() {
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
   printf '  \e['${b_trgb}'m»\e[m %s\n' \
+         "extract root devices"
+
+  _rdev=$(sed -e 's/^.*root=//' -e 's/ .*$//' /proc/cmdline)
+
+  printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "install grub bootloader"
 
   _init_cmd \
-  "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
+  "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ $_rdev\""
 
   printf '  \e['${b_trgb}'m»\e[m %s\n' \
          "update grub configuration"
