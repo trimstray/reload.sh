@@ -220,8 +220,7 @@ function _init_cmd() {
 
     # Execute command and exit save to file.
     # shellcheck disable=SC2154
-    # $_cmd >"/dev/null" 2>&1 &
-    $_cmd &
+    $_cmd >"/dev/null" 2>&1 &
 
     # We keep pid of the last command.
     _pid="$!"
@@ -545,6 +544,8 @@ function __main__() {
 
   _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
 
+  printf "%s\\n" "Randomization of working directory names"
+
   # Randomization of working directory names.
   _rand 32 ; init_directory="${base_directory}/${_rval}"
   _rand 32 ; new_directory="${base_directory}/${_rval}"
@@ -561,12 +562,19 @@ function __main__() {
 
   fi
 
+  printf "%s\\n" "Phase 1"
+
   # Phase 1:
   #   - init base system (sync from _build_distro)
   #   - mount proc sys dev dev/pts
+
+  printf "  %s\\n" "init base system"
+
   _build "$init_directory"
 
   _init_cmd "$_scmd"
+
+  printf "  %s\\n" "mount filesystems"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -581,15 +589,24 @@ function __main__() {
 
   fi
 
+  printf "%s\\n" "Phase 2"
+
   # Phase 2:
   #   - init temporary-system (sync from _build_distro)
   #   - regenerate /etc/mtab file
+
+  printf "  %s\\n" "init temporary-system"
+
   _build "$tmp_directory"
 
   _init_cmd "$_scmd"
 
+  printf "  %s\\n" "mount directories"
+
   _init_cmd \
   "mount --bind $tmp_directory ${init_directory}/${new_directory}"
+
+  printf "  %s\\n" "regenerate /etc/mtab file"
 
   _init_cmd \
   "$_chroot_cmd \"grep -v rootfs /proc/mounts > /etc/mtab\""
@@ -601,15 +618,24 @@ function __main__() {
 
   fi
 
+  printf "%s\\n" "Phase 3"
+
   # Phase 3:
   #   - mount root filesystem (from base disk)
   #   - sync without excluded directories
   #   - mount proc sys dev dev/pts
+
+  printf "  %s\\n" "mount root filesystem"
+
   _init_cmd \
   "$_chroot_cmd \"mount /dev/vda1 $old_directory\""
 
+  printf "  %s\\n" "sync without excluded directories"
+
   _init_cmd \
   "$_chroot_cmd \"rsync -aAX --delete --exclude={${_excl}} ${new_directory}/ ${old_directory}\""
+
+  printf "  %s\\n" "mount filesystems"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -619,17 +645,23 @@ function __main__() {
 
   done
 
+  printf "%s\\n" "Phase 4"
+
   # Phase 4:
   #   - post install jobs
   _fdir="${init_directory}/${old_directory}"
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
+  printf "  %s\\n" "install bootloader"
+
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ /dev/vda\""
 
   _init_cmd \
   "$_chroot_cmd \"update-grub\""
+
+  printf "  %s\\n" "init sysrq"
 
   _init_cmd \
   "$_chroot_cmd \"echo 1 > /proc/sys/kernel/sysrq\""
