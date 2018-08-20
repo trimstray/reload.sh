@@ -1,6 +1,6 @@
 # `reload.sh`
 
-Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process - from the level of the running operating system.
+Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process - only from the level of the running operating system
 
 ## How it works?
 
