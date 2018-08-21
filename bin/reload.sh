@@ -48,6 +48,16 @@ readonly _init_directory="$(dirname "$(readlink -f "$0")")"
 # Set root directory.
 readonly _rel="${_init_directory}/.."
 
+# Set default colors for printf.
+# shellcheck disable=SC2034
+readonly b_trgb="0;1;30"
+# shellcheck disable=SC2034
+readonly c_trgb="1;1;36"
+# shellcheck disable=SC2034
+readonly s_trgb="0;2;39"
+# shellcheck disable=SC2034
+readonly w_trgb="1;1;49"
+
 
 ################################################################################
 ################## The configuration parameters of the script ##################
@@ -244,6 +254,46 @@ function _init_cmd() {
     _STATE="$_state"
 
   done
+
+  return "$_STATE"
+
+}
+
+# ``````````````````````````````````````````````````````````````````````````````
+# Function name: _sprintf()
+#
+# Description:
+#   Function designed to printf output on the screen in a clear format.
+#
+# Usage:
+#   _sprintf "type" "msg" "msg"
+#
+# Examples:
+#   _sprintf "head" "drop" "privileges"
+#
+
+function _sprintf() {
+
+  local _FUNCTION_ID="_sprintf"
+  local _STATE="0"
+
+  local _s_type="$1"
+  local _s_hinfo="$2"
+  local _s_sinfo="$3"
+
+  # Determine the type of character and color for each type
+  # of output information.
+  if [[ "$_s_type" == "head" ]] ; then
+
+    printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
+           "$_s_hinfo" "$_s_sinfo"
+
+  elif [[ "$_s_type" == "info" ]] ; then
+
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
+           "$_s_hinfo" "$_s_sinfo"
+
+  fi
 
   return "$_STATE"
 
@@ -503,16 +553,6 @@ function __main__() {
     esac
 
   done
-
-  # Set default colors for printf.
-  # shellcheck disable=SC2034
-  local b_trgb="0;1;30"
-  # shellcheck disable=SC2034
-  local c_trgb="1;1;36"
-  # shellcheck disable=SC2034
-  local s_trgb="0;2;39"
-  # shellcheck disable=SC2034
-  local w_trgb="1;1;49"
 
   ################################# USER SPACE #################################
   # ````````````````````````````````````````````````````````````````````````````
