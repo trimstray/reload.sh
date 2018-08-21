@@ -633,9 +633,15 @@ function __main__() {
 
   if [[ "$base_distro_state" -eq 1 ]] ; then
 
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
+           "build from $_base_distro directory"
+
     _build "$_base_distro" "$init_directory"
 
   else
+
+    printf '  \e['${b_trgb}'m»\e[m %s\n' \
+           "build with debootstrap"
 
     _init_cmd "debootstrap \
               --verbose --variant=minbase --include=$_packages --arch amd64 jessie \
