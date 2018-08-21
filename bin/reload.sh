@@ -642,8 +642,8 @@ function __main__() {
 
 
   # Phase 1:
-  #   - randomization of working directory names
-  #   - create init directory
+  #   - randomize directory names
+  #   - create $init_directory
 
   sleep 0.5
 
@@ -683,27 +683,28 @@ function __main__() {
   sleep 0.5
 
   # Phase 2:
-  #   - build base system (from _base_distro)
-  #   - mount proc sys dev dev/pts
-  #   - create build directory
+  #   - make base system
+  #   - build in $_base_distro directory / build with debootstrap
+  #   - mount filesystems: proc sys dev dev/pts
+  #   - create ${init_directory}/${build_directory}
 
   _sprintf "head" \
            "Phase" "$_phase_counter"
 
   _sprintf "info" \
-           "build base system"
+           "make base system"
 
   if [[ "$base_distro_state" -eq 1 ]] ; then
 
     _sprintf "info" \
-             "set $_base_distro directory"
+             "build in $_base_distro directory"
 
     _build "$_base_distro" "$init_directory"
 
   else
 
     _sprintf "info" \
-             "set debootstrap"
+             "build with debootstrap"
 
     _init_cmd "debootstrap \
               --verbose --variant=minbase --include=$_packages --arch amd64 jessie \
@@ -741,7 +742,8 @@ function __main__() {
 
   # Phase 3:
   #   - set source variables
-  #   - mount source directory to build directory
+  #   - mount $src_directory to ${init_directory}/${build_directory}
+  #   - create $running_directory
 
   _sprintf "head" \
            "Phase" "$_phase_counter"
@@ -777,9 +779,9 @@ function __main__() {
   sleep 0.5
 
   # Phase 4:
-  #   - mount root filesystem (from current disk)
+  #   - mount root filesystem
   #   - sync without excluded system directories
-  #   - mount proc sys dev dev/pts
+  #   - mount filesystems: proc sys dev dev/pts
 
   _sprintf "head" \
            "Phase" "$_phase_counter"
@@ -820,9 +822,11 @@ function __main__() {
   sleep 0.5
 
   # Phase 4:
+  #   - set root device
   #   - install grub bootloader
   #   - update grub configuration
   #   - init sysrq-trigger
+  #   - init new environment
 
   _sprintf "head" \
            "Phase" "$_phase_counter"
