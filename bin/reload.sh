@@ -547,37 +547,38 @@ function __main__() {
 
   fi
 
-  # Base directory: /mnt
-  local base_directory
+  # Set base directory, e.g. /mnt.
+  local base_directory="/mnt"
 
-  # Init system directory.
+  # Init system directory (specified with the --base parameter).
   local init_directory
 
-  local build_directory
-  local running_directory
-
-  # Stores system that visible from chroot in build_directory and running_directory.
+  # Directory with a copy of your system for reinstall/restore
+  # visible from chroot environment (init_directory).
   local src_directory
+
+  # Directory with your system backup file.
+  local build_directory
+
+  # Directory with files of the currently operating system,
+  # which will be overwritten by a copy in the directory.
+  local running_directory
 
   local _fdir
   local _scmd
 
-  local _excl
+  local _excl_sys="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\""
+  local _excl_add="\"/mnt/*\",\"/media/*\",\"/lost+found\""
+  local _excl="${_excl_sys},${_excl_add}"
 
   # Commands that uses in chroot environment.
   local _chroot_cmd
 
   # Packages list.
-  local _packages
+  local _packages="linux-image-amd64,grub2,rsync"
 
   # Root device.
   local _rdev
-
-  base_directory="/mnt"
-
-  _excl="\"/proc/*\",\"/dev/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\""
-
-  _packages="linux-image-amd64,grub2,rsync"
 
 
   # ````````````````````````````````````````````````````````````````````````````
