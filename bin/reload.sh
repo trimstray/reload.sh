@@ -818,7 +818,7 @@ function __main__() {
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
   _sprintf "info" \
-           "extract root devices"
+           "set root device"
 
   _rdev=$(sed -e 's/^.*root=//' -e 's/ .*$//' /proc/cmdline)
 
@@ -844,11 +844,13 @@ function __main__() {
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
   _sprintf "info" \
-           "init new environment (ctrl+d or exit to drop environment)"
-
-  chroot "${init_directory}/${running_directory}" /bin/bash
+           "init new environment (ctrl+d or exit to drop shell)"
 
   _phase_counter=$((_phase_counter + 1))
+
+  echo
+
+  chroot "${init_directory}/${running_directory}" /bin/bash
 
 
   # ````````````````````````````````````````````````````````````````````````````
