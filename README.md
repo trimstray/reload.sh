@@ -1,11 +1,9 @@
 # `reload.sh`
 
-Silly but interesting way to reinstall your system without using a cd-rom, flash memory and anything you could think about this process.
+<br>
 
-<p align="center">
-    <img src="https://i.imgur.com/FCQl7pQ.gif"
-         alt="Master">
-</p>
+<img src="https://i.imgur.com/QETbVXy.gif" align="center"
+     title="reload.sh preview">
 
 ## How it works?
 
@@ -23,10 +21,16 @@ _base="/mnt/minimal-base"
 
   > If you do not specify this parameter, the temporary system will be downloaded automatically.
 
-Init `reload.sh`:
+Set path to main system disk:
 
 ```bash
-./bin/reload.sh --base "$_base" --build "$_build"
+_disk="/dev/vda"
+```
+
+Run `reload.sh`:
+
+```bash
+./bin/reload.sh --base "$_base" --build "$_build" --disk "$_disk"
 ```
 
 ## Contributions
