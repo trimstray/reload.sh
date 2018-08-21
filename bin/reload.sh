@@ -718,14 +718,14 @@ function __main__() {
   if [[ "$base_distro_state" -eq 1 ]] ; then
 
     _sprintf "info" \
-             "build in $_base_distro directory"
+             "build in $init_directory with rsync/tar"
 
     _build "$_base_distro" "$init_directory"
 
   else
 
     _sprintf "info" \
-             "build with debootstrap"
+             "build in $init_directory with debootstrap"
 
     _init_cmd "debootstrap $_deb_params --include=$_packages \
               $init_directory \
