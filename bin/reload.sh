@@ -335,13 +335,14 @@ function _help_() {
     $_init_name <option|long-option>
 
   Examples:
-    $_init_name --build /mnt/system-backup.tgz
-    $_init_name --base /mnt/minimal-base --build /mnt/system-backup.tgz
+    $_init_name --build /mnt/system-backup.tgz --disk /dev/sda
+    $_init_name --base /mnt/minimal-base --build /mnt/system-backup.tgz --disk /dev/vda
 
   Options:
         --help                        show this message
-        --base <dir>                  set minimal base distro (optional param)
-        --build <archive>             set your system backup archive (tar + gz)
+        --base <directory>            set minimal base distro (optional param)
+        --build <archive_file>        set your system backup archive (tar + gz)
+        --disk <disk_drive>           set main disk (e.g. /dev/sda)
         --ignore-failed               do not exit with nonzero on commands failed
 
 
@@ -453,13 +454,20 @@ function __main__() {
   # Default random value.
   export _rval=0
 
-  # Default values for --build param.
+  # Default values for --base param.
   local base_distro_state=0
   local _base_distro=""
 
   # Default values for --build param.
   local build_distro_state=0
   local _build_distro=""
+
+  # Default values for --disk param.
+  local disk_state=0
+  local _disk=""
+
+  # Default values for --ignore-failed param.
+  local ignore_failed_state=0
 
   # We place here used commands at script runtime, as strings to anything
   # unnecessarily run.
@@ -503,7 +511,7 @@ function __main__() {
   # Specifies the call parameters of the script, the exact description
   # can be found in _help_ and file README.md.
   local _short_opt=""
-  local _long_opt="help,base:,build:,ignore-failed"
+  local _long_opt="help,base:,build:,disk:,ignore-failed"
 
   _GETOPT_PARAMS=$(getopt -o "${_short_opt}" --long "${_long_opt}" \
                    -n "${_init_name}" -- "${__script_params[@]}")
@@ -549,6 +557,14 @@ function __main__() {
 
         shift 2 ;;
 
+      --disk)
+
+        export disk_state=1
+
+        export _disk="${2}"
+
+        shift 2 ;;
+
       --ignore-failed)
 
         export ignore_failed_state=1
@@ -581,7 +597,8 @@ function __main__() {
   # or selected parameters without which the script can not work properly
   # have been used. Do not add the load_state variable to the _opt_values array,
   # which is supported above.
-  _opt_values=("build_distro_state" "_build_distro")
+  _opt_values=("build_distro_state" "_build_distro" \
+               "disk_state" "_disk")
 
   # Checking the value of the variables (if they are unset or empty):
   #   - variables for call parameters
@@ -838,7 +855,7 @@ function __main__() {
   _sprintf "info" \
            "set root device"
 
-  _rdev=$(sed -e 's/^.*root=//' -e 's/ .*$//' /proc/cmdline)
+  _rdev="$_disk"
 
   _sprintf "info" \
            "install grub bootloader"
