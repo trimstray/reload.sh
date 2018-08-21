@@ -249,6 +249,9 @@ function _init_cmd() {
 
       r_state=1
 
+      printf "COMMAND ERROR:\\n  '%s'\\n" "$_cmd"
+      _exit_ "1"
+
     fi
 
     _STATE="$_state"
@@ -290,8 +293,8 @@ function _sprintf() {
 
   elif [[ "$_s_type" == "info" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "$_s_hinfo" "$_s_sinfo"
+    printf '  \e['${b_trgb}'m%s\e[m %s\n' \
+           "»" "$_s_hinfo"
 
   fi
 
@@ -632,11 +635,11 @@ function __main__() {
 
   local _phase_counter=1
 
-  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
-         "Phase" "$_phase_counter"
+  _sprintf "head" \
+           "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "randomize directory names"
+  _sprintf "info" \
+           "randomize directory names"
 
   # Randomization of working directory names.
   _rand 16 ; init_directory="${base_directory}/${_rval}"
@@ -650,8 +653,8 @@ function __main__() {
 
   if [[ ! -d "$init_directory" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "create $init_directory"
+    _sprintf "info" \
+             "create $init_directory"
 
     mkdir -p "$init_directory"
 
@@ -670,23 +673,23 @@ function __main__() {
   #   - mount proc sys dev dev/pts
   #   - create build directory
 
-  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
-         "Phase" "$_phase_counter"
+  _sprintf "head" \
+           "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "build base system"
+  _sprintf "info" \
+           "build base system"
 
   if [[ "$base_distro_state" -eq 1 ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "build from $_base_distro directory"
+    _sprintf "info" \
+             "set $_base_distro directory"
 
     _build "$_base_distro" "$init_directory"
 
   else
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "build with debootstrap"
+    _sprintf "info" \
+             "set debootstrap"
 
     _init_cmd "debootstrap \
               --verbose --variant=minbase --include=$_packages --arch amd64 jessie \
@@ -695,8 +698,8 @@ function __main__() {
 
   fi
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "mount filesystems: proc sys dev dev/pts"
+    _sprintf "info" \
+             "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -707,8 +710,8 @@ function __main__() {
 
   if [[ ! -d "${init_directory}/${build_directory}" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "create ${init_directory}/${build_directory}"
+    _sprintf "info" \
+             "create ${init_directory}/${build_directory}"
 
     mkdir -p "${init_directory}/${build_directory}"
 
@@ -726,25 +729,25 @@ function __main__() {
   #   - set source variables
   #   - mount source directory to build directory
 
-  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
-         "Phase" "$_phase_counter"
+  _sprintf "head" \
+           "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "set source variables"
+  _sprintf "info" \
+           "set source variables"
 
   readonly src_file="$(basename "$_build_distro")"
   readonly src_directory="$(dirname "$(readlink -f "$_build_distro")")"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "mount $src_directory to ${init_directory}/${build_directory}"
+  _sprintf "info" \
+           "mount $src_directory to ${init_directory}/${build_directory}"
 
   _init_cmd \
   "mount --bind $src_directory ${init_directory}/${build_directory}"
 
   if [[ ! -d "${init_directory}/${running_directory}" ]] ; then
 
-    printf '  \e['${b_trgb}'m»\e[m %s\n' \
-           "create $running_directory"
+    _sprintf "info" \
+             "create $running_directory"
 
     _init_cmd \
     "$_chroot_cmd \"mkdir -p $running_directory\""
@@ -764,17 +767,17 @@ function __main__() {
   #   - sync without excluded system directories
   #   - mount proc sys dev dev/pts
 
-  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
-         "Phase" "$_phase_counter"
+  _sprintf "head" \
+           "Phase" "$_phase_counter"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "mount root filesystem"
+  _sprintf "info" \
+           "mount root filesystem"
 
   _init_cmd \
   "$_chroot_cmd \"mount /dev/vda1 $running_directory\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "sync without excluded system directories"
+  _sprintf "info" \
+           "sync without excluded system directories"
 
   # shellcheck disable=SC2012
   _init_cmd \
@@ -783,8 +786,8 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"tar xzvfp \"${build_directory}/${src_file}\" -C ${running_directory}\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "mount filesystems: proc sys dev dev/pts"
+  _sprintf "info" \
+           "mount filesystems: proc sys dev dev/pts"
 
   # Mount filesystems.
   for i in proc sys dev dev/pts ; do
@@ -807,32 +810,32 @@ function __main__() {
   #   - update grub configuration
   #   - init sysrq-trigger
 
-  printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
-         "Phase" "$_phase_counter"
+  _sprintf "head" \
+           "Phase" "$_phase_counter"
 
   _fdir="${init_directory}/${running_directory}"
 
   _chroot_cmd="eval chroot $_fdir /bin/bash -c"
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "extract root devices"
+  _sprintf "info" \
+           "extract root devices"
 
   _rdev=$(sed -e 's/^.*root=//' -e 's/ .*$//' /proc/cmdline)
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "install grub bootloader"
+  _sprintf "info" \
+           "install grub bootloader"
 
   _init_cmd \
   "$_chroot_cmd \"grub-install --no-floppy --root-directory=/ $_rdev\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "update grub configuration"
+  _sprintf "info" \
+           "update grub configuration"
 
   _init_cmd \
   "$_chroot_cmd \"update-grub\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "init sysrq-trigger"
+  _sprintf "info" \
+           "init sysrq-trigger"
 
   _init_cmd \
   "$_chroot_cmd \"echo 1 > /proc/sys/kernel/sysrq\""
@@ -840,8 +843,8 @@ function __main__() {
   _init_cmd \
   "$_chroot_cmd \"echo reisu > /proc/sysrq-trigger\""
 
-  printf '  \e['${b_trgb}'m»\e[m %s\n\n' \
-         "init new environment (ctrl+d or exit to drop environment)"
+  _sprintf "info" \
+           "init new environment (ctrl+d or exit to drop environment)"
 
   chroot "${init_directory}/${running_directory}" /bin/bash
 
