@@ -588,13 +588,15 @@ function __main__() {
   #   - randomization of working directory names
   #   - create init directory
 
+  sleep 0.5
+
   local _phase_counter=1
 
   printf '\n    \e['${w_trgb}'m%s\e[m: \e['${c_trgb}'m%s\e[m\n\n' \
          "Phase" "$_phase_counter"
 
   printf '  \e['${b_trgb}'m»\e[m %s\n' \
-         "randomization of working directory names"
+         "randomize directory names"
 
   # Randomization of working directory names.
   _rand 16 ; init_directory="${base_directory}/${_rval}"
@@ -620,6 +622,8 @@ function __main__() {
 
   # ````````````````````````````````````````````````````````````````````````````
 
+
+  sleep 0.5
 
   # Phase 2:
   #   - build base system (from _base_distro)
@@ -676,6 +680,8 @@ function __main__() {
   # ````````````````````````````````````````````````````````````````````````````
 
 
+  sleep 0.5
+
   # Phase 3:
   #   - set source variables
   #   - mount source directory to build directory
@@ -710,6 +716,8 @@ function __main__() {
 
   # ````````````````````````````````````````````````````````````````````````````
 
+
+  sleep 0.5
 
   # Phase 4:
   #   - mount root filesystem (from current disk)
@@ -751,6 +759,8 @@ function __main__() {
 
   # ````````````````````````````````````````````````````````````````````````````
 
+
+  sleep 0.5
 
   # Phase 4:
   #   - install grub bootloader
