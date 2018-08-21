@@ -416,7 +416,7 @@ function _build() {
   # - external repository
   else
 
-    _scmd="deboostrap --arch amd64 $_src $_dst http://ftp.pl.debian.org/debian"
+    _scmd="deboostrap $_deb_params $_dst $_deb_mirror"
 
   fi
 
@@ -465,6 +465,10 @@ function __main__() {
   # Default values for --disk param.
   local disk_state=0
   local _disk=""
+
+  # Debootstrap params.
+  local _deb_mirror="http://ftp.uk.debian.org/debian/"
+  local _deb_params="--arch --variant=minbase amd64"
 
   # Default values for --ignore-failed param.
   local ignore_failed_state=0
@@ -723,10 +727,9 @@ function __main__() {
     _sprintf "info" \
              "build with debootstrap"
 
-    _init_cmd "debootstrap \
-              --verbose --variant=minbase --include=$_packages --arch amd64 jessie \
+    _init_cmd "debootstrap $_deb_params --include=$_packages \
               $init_directory \
-              http://ftp.pl.debian.org/debian"
+              $_deb_mirror"
 
   fi
 
