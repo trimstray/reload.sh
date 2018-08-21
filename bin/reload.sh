@@ -52,6 +52,8 @@ readonly _rel="${_init_directory}/.."
 # shellcheck disable=SC2034
 readonly b_trgb="0;1;30"
 # shellcheck disable=SC2034
+readonly r_trgb="1;0;31"
+# shellcheck disable=SC2034
 readonly c_trgb="1;1;36"
 # shellcheck disable=SC2034
 readonly s_trgb="0;2;39"
@@ -249,8 +251,13 @@ function _init_cmd() {
 
       r_state=1
 
-      printf "COMMAND ERROR:\\n  '%s'\\n" "$_cmd"
-      _exit_ "1"
+      if [[ "$ignore_failed_state" -eq 0 ]] ; then
+
+        printf '  \e['${r_trgb}'m%s\e[m\n' \
+               "command failed"
+        _exit_ "1"
+
+      fi
 
     fi
 
@@ -335,6 +342,7 @@ function _help_() {
         --help                        show this message
         --base <dir>                  set minimal base distro (optional param)
         --build <archive>             set your system backup archive (tar + gz)
+        --ignore-failed               do not exit with nonzero on commands failed
 
 
   This program comes with ABSOLUTELY NO WARRANTY.
@@ -495,7 +503,7 @@ function __main__() {
   # Specifies the call parameters of the script, the exact description
   # can be found in _help_ and file README.md.
   local _short_opt=""
-  local _long_opt="help,base:,build:"
+  local _long_opt="help,base:,build:,ignore-failed"
 
   _GETOPT_PARAMS=$(getopt -o "${_short_opt}" --long "${_long_opt}" \
                    -n "${_init_name}" -- "${__script_params[@]}")
@@ -540,6 +548,12 @@ function __main__() {
         export _build_distro="${2}"
 
         shift 2 ;;
+
+      --ignore-failed)
+
+        export ignore_failed_state=1
+
+        shift ;;
 
       *)
 
