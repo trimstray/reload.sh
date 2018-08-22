@@ -656,7 +656,10 @@ function __main__() {
   local _packages="linux-image-amd64,grub2,rsync"
 
   # Root device.
-  local _rdev
+  local _rdev="$_disk"
+  local _rpart
+
+  _rpart=$(mount | grep "$_rdev" | awk '{print $1}')
 
 
   # ````````````````````````````````````````````````````````````````````````````
@@ -810,7 +813,7 @@ function __main__() {
            "mount root filesystem"
 
   _init_cmd \
-  "$_chroot_cmd \"mount /dev/vda1 $running_directory\""
+  "$_chroot_cmd \"mount /dev/${_rpart} $running_directory\""
 
   _sprintf "info" \
            "sync without excluded system directories"
@@ -857,8 +860,6 @@ function __main__() {
 
   _sprintf "info" \
            "set root device"
-
-  _rdev="$_disk"
 
   _sprintf "info" \
            "install grub bootloader"
