@@ -5,6 +5,18 @@
 <img src="https://i.imgur.com/QETbVXy.gif" align="center"
      title="reload.sh preview">
 
+## Don't do it...
+
+Please don't do it on live systems (e.g. production) or on your private computer where you stored critical data.
+
+This recipe show you how to install fresh system where other system exist and running. It's really cool and amazing but very risky!
+
+If you want to go into chaos of monkey read on.
+
+## Why I created it?
+
+I like experiments because I love to know how things work. GNU/Linux allow me to understand and show me some of the more tricky concepts. That's all.
+
 ## How it works?
 
 Set your archive with system backup to restore:
