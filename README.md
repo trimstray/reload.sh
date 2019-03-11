@@ -19,7 +19,7 @@ Set path to temporary system (optional):
 _base="/mnt/minimal-base"
 ```
 
-  > If you do not specify this parameter, the temporary system will be downloaded automatically.
+  > If you do not set this parameter, the temporary system will be downloaded automatically.
 
 Set path to main system disk:
 
