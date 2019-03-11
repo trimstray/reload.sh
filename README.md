@@ -33,9 +33,9 @@ Run `reload.sh`:
 ./bin/reload.sh --base "$_base" --build "$_build" --disk "$_disk"
 ```
 
-## Contributions
+## Contributing
 
-Suggestions and pull requests are welcome. See also **[this](CONTRIBUTING.md)**.
+Before adding a pull request, please see the **[contributing guidelines](CONTRIBUTING.md)**. All **suggestions/PR** are welcome!
 
 ## See also
 
