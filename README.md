@@ -7,7 +7,7 @@
 
 ## Don't do it...
 
-Please don't do it on live systems (e.g. production) or on your private computer where you stored critical data.
+Please **don't do it on live systems** (e.g. production) or on your **private computer** where you **stored critical data**.
 
 This recipe show you how to install fresh system where other system exist and running. It's really cool and amazing but very risky!
 
@@ -15,9 +15,13 @@ If you want to go into the chaos of monkey read on.
 
 ## Why I created it?
 
-I like experiments because I love to know how things work. They allow me to understand and show me some of the more tricky concepts. That's all.
+I like experiments because I love to know how things work. They allow me to understand and show me some of the more tricky concepts.
+
+Long time ago, this way saved my life but it was crazy.
 
 ## How it works?
+
+  > A beginner's guide of [reload.sh](https://blkcipher.info/5f438f523d7ee1bb741bd21456ee2cbc.html) <sup>[PL]</sup>
 
 Set your archive with system backup to restore:
 
