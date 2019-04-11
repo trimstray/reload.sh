@@ -2,8 +2,7 @@
 
 <br>
 
-<img src="https://i.imgur.com/QETbVXy.gif" align="center"
-     title="reload.sh preview">
+<img src="https://i.imgur.com/QETbVXy.gif" align="center" title="reload.sh preview">
 
 ## Don't do it...
 
