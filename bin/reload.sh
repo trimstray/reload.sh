@@ -416,7 +416,7 @@ function _build() {
   # - external repository
   else
 
-    _scmd="deboostrap $_deb_params $_dst $_deb_mirror"
+    _scmd="debootstrap $_deb_params $_dst $_deb_mirror"
 
   fi
 
