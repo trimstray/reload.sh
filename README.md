@@ -50,7 +50,7 @@ Run `reload.sh`:
 
 ## Contributing
 
-Before adding a pull request, please see the **[contributing guidelines](CONTRIBUTING.md)**. All **suggestions/PR** are welcome!
+Before adding a pull request, please see the **[contributing guidelines](.github/CONTRIBUTING.md)**. All **suggestions/PR** are welcome!
 
 ## See also
 
