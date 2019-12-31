@@ -20,7 +20,7 @@ Long time ago, this way saved my life but it was crazy.
 
 ## How it works?
 
-  > A beginner's guide of [reload.sh](https://blkcipher.info/5f438f523d7ee1bb741bd21456ee2cbc.html) <sup>[PL]</sup>
+  > A beginner's guide of [reload.sh](https://trimstray.github.io/dee625b8b2e43917031e204d545f767b.html) <sup>[PL]</sup>
 
 Set your archive with system backup to restore:
 
