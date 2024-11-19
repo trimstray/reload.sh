@@ -56,12 +56,6 @@ Before adding a pull request, please see the **[contributing guidelines](.github
 
 * [`takeover.sh`](https://github.com/marcan/takeover.sh)
 
-## Credits
-
-| [![twitter/trimstray](https://avatars2.githubusercontent.com/u/31127917?s=140&v=4)](https://twitter.com/trimstray "Follow @trimstray on Twitter") |
-|---|
-| <p align="center"><a href="https://github.com/trimstray">trimstray</a></p> |
-
 ## License
 
 GPLv3 : <http://www.gnu.org/licenses/>
